@@ -23,6 +23,6 @@ if ($targetIsGodot) {
 Set-Location -Path $targetLocation
 
 if ($targetIsGodot) {
-	wt -w 0 new-tab -d $targetLocation godot --editor .
+	#wt -w 0 new-tab -d $targetLocation godot --editor .
 	nvim --listen \\.\pipe\nvim.godot.pipe .
 }
