@@ -1,4 +1,5 @@
-# 
+Import-Module $PSScriptRoot\UtilsModule.psm1
+
 $search_dir = $env:DEV_DIR
 $selected=Get-ChildItem $search_dir | fzf 
 if ([string]::IsNullOrEmpty($selected)) {
@@ -11,18 +12,34 @@ $selected=$selected -replace '\s+', ' '
 $selected=$selected -split ' '
 $selected=$selected[3]
 
-$targetLocation=$search_dir+"\"+$selected
+$TargetLocation=$search_dir+"\"+$selected
 
-$potentialGodotFile=$targetLocation+"\project.godot"
-$targetIsGodot=Test-Path $potentialGodotFile -PathType leaf
+$PotentialGodotFile=$TargetLocation+"\project.godot"
 
-if ($targetIsGodot) {
-	Write-Output "Folder is godot project"
+$TargetIsGodot=Test-Path $potentialGodotFile -PathType leaf
+if ($TargetIsGodot) {
+	Write-Output "Detected godot.project file"
+}
+
+$OpenEditor=$false
+$OpenEditorResponse=Read-Prompt -Prompt "Open editor (default yes)" -DefaultValue "yes"
+if ($OpenEditorResponse -And $OpenEditorResponse.Substring(0,1) -eq "y") {
+	$OpenEditor=$true
+}
+
+$OpenGodot=$false
+if ($TargetIsGodot) {
+	$OpenGodotResponse=Read-Prompt -Prompt "Open godot (default no)" -DefaultValue "no"
+	if ($OpenGodotResponse -And $OpenGodotResponse.Substring(0,1) -eq "y") {
+		$OpenGodot=$true
+	}
 }
 
 Set-Location -Path $targetLocation
 
-if ($targetIsGodot) {
-	#wt -w 0 new-tab -d $targetLocation godot --editor .
+if ($TargetIsGodot -And $OpenEditor) {
 	nvim --listen \\.\pipe\nvim.godot.pipe .
+}
+if ($OpenGodot) {
+	wt -w 0 new-tab -d $targetLocation godot --editor .
 }
