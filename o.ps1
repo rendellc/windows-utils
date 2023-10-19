@@ -21,6 +21,19 @@ if ($TargetIsGodot) {
 	Write-Output "Detected godot.project file"
 }
 
+$PotentialPythonFile=$TargetLocation+"\requirements.txt"
+$TargetIsPython=Test-Path $PotentialPythonFile -PathType leaf
+$SourceVenv=$true
+if ($TargetIsPython) {
+	Write-Output "Detected requirements.txt file"
+	$SourceVenvResponse=Read-Prompt -Prompt "Source venv (default yes)" -DefaultValue "yes"
+	if ($SourceVenvResponse -And $SourceVenvResponse.Substring(0,1) -eq "y") {
+		$SourceVenv=$true
+	}
+}
+
+Write-Host "Source venv: " $SourceVenv
+
 $OpenEditor=$false
 $OpenEditorResponse=Read-Prompt -Prompt "Open editor (default no)" -DefaultValue "no"
 if ($OpenEditorResponse -And $OpenEditorResponse.Substring(0,1) -eq "y") {
@@ -46,6 +59,13 @@ if ($TargetIsGodot) {
 		wt -w 0 new-tab -d $targetLocation godot --editor .
 	}
 }
+
 if ($OpenEditor) {
 	nvim .
 }
+
+if ($TargetIsPython -And $SourceVenv) {
+	.\venv\Scripts\activate
+}
+
+
