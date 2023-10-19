@@ -22,7 +22,7 @@ if ($TargetIsGodot) {
 }
 
 $OpenEditor=$false
-$OpenEditorResponse=Read-Prompt -Prompt "Open editor (default yes)" -DefaultValue "yes"
+$OpenEditorResponse=Read-Prompt -Prompt "Open editor (default no)" -DefaultValue "no"
 if ($OpenEditorResponse -And $OpenEditorResponse.Substring(0,1) -eq "y") {
 	$OpenEditor=$true
 }
@@ -36,10 +36,16 @@ if ($TargetIsGodot) {
 }
 
 Set-Location -Path $targetLocation
+Set-TabTitle -Title $selected
 
-if ($TargetIsGodot -And $OpenEditor) {
-	nvim --listen \\.\pipe\nvim.godot.pipe .
+if ($TargetIsGodot) {
+	if ($OpenEditor) {
+		nvim --listen \\.\pipe\nvim.godot.pipe .
+	}
+	if ($OpenGodot) {
+		wt -w 0 new-tab -d $targetLocation godot --editor .
+	}
 }
-if ($OpenGodot) {
-	wt -w 0 new-tab -d $targetLocation godot --editor .
+if ($OpenEditor) {
+	nvim .
 }

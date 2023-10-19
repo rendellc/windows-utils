@@ -12,4 +12,14 @@ function Read-Prompt {
 	return $PromptValue
 }
 
+function Set-TabTitle {
+	param (
+		[string]$Title
+	)
+
+	$Host.UI.RawUI.WindowTitle = $Title
+}
+
+
 Export-ModuleMember -Function Read-Prompt
+Export-ModuleMember -Function Set-TabTitle
