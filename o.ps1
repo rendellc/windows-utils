@@ -1,5 +1,10 @@
 Import-Module $PSScriptRoot\UtilsModule.psm1
 
+# Deactivate python venv
+if (Test-Path env:VIRTUAL_ENV) {
+	deactivate
+}
+
 $search_dir = $env:DEV_DIR
 $selected=Get-ChildItem $search_dir | fzf 
 if ([string]::IsNullOrEmpty($selected)) {
@@ -23,16 +28,14 @@ if ($TargetIsGodot) {
 
 $PotentialPythonFile=$TargetLocation+"\requirements.txt"
 $TargetIsPython=Test-Path $PotentialPythonFile -PathType leaf
-$SourceVenv=$true
 if ($TargetIsPython) {
+	$SourceVenv=$false
 	Write-Output "Detected requirements.txt file"
 	$SourceVenvResponse=Read-Prompt -Prompt "Source venv (default yes)" -DefaultValue "yes"
 	if ($SourceVenvResponse -And $SourceVenvResponse.Substring(0,1) -eq "y") {
 		$SourceVenv=$true
 	}
 }
-
-Write-Host "Source venv: " $SourceVenv
 
 $OpenEditor=$false
 $OpenEditorResponse=Read-Prompt -Prompt "Open editor (default no)" -DefaultValue "no"
