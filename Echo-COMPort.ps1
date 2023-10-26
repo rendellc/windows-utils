@@ -1,9 +1,9 @@
 param (
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$true, HelpMessage="COMn (e.g COM1 | COM2 | ...)")]
 	[string]$COMn,
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$true, HelpMessage="Baudrate (9600 | 19200 | ...)")]
 	[string]$Baud,
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory=$true, HelpMessage="Parity (none | even | odd | mark | space)")]
 	[string]$Parity
 )
 
