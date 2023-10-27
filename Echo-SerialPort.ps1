@@ -7,23 +7,17 @@ param (
 	[string]$Parity
 )
 
-
 try {
 	$port = new-Object System.IO.Ports.SerialPort $COMn,$Baud,$Parity,8,one
+	Write-Host "Opening serial port. Press <C-c> to exit..."
 	$port.open()
-	$timeout = New-TimeSpan -Seconds 10
-	$sw = [Diagnostics.Stopwatch]::StartNew()
-	while ($sw.elapsed -lt $timeout) {
+	while ($true) {
 		$data = $port.ReadExisting()
 
 		if ($data) {
 			Write-Host -NoNewLine $data
 		}
 	}
-	Write-Host "Stop watch completed"
-}
-finally {
-	Write-Host "Closing ports"
-	$sw.Stop()
+} finally {
 	$port.Close()
 }
