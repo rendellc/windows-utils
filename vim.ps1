@@ -1,3 +1,2 @@
 $simplevimrcpath=$PSScriptRoot + "\data\.vimrc"
-
-nvim --clean -u $simplevimrcpath
+nvim --clean -u $simplevimrcpath $Args

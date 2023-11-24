@@ -74,6 +74,9 @@ map <C-l> <C-W>l
 
 
 
+" Keep things centered when searching
+nnoremap n nzz
+nnoremap N Nzz
 
 """ Status line
 
