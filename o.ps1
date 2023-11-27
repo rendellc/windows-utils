@@ -6,16 +6,15 @@ if (Test-Path env:VIRTUAL_ENV) {
 }
 
 $search_dir = $env:DEV_DIR
-$selected=Get-ChildItem $search_dir | fzf 
+$selected=Get-ChildItem -Path $search_dir -Directory -Recurse -Name -Depth 2 | fzf 
 if ([string]::IsNullOrEmpty($selected)) {
 	Write-Host "No folder selected"
 	Exit
 }
 
-
-$selected=$selected -replace '\s+', ' '
-$selected=$selected -split ' '
-$selected=$selected[3]
+# $selected=$selected -replace '\s+', ' '
+# $selected=$selected -split ' '
+# $selected=$selected[3]
 
 $TargetLocation=$search_dir+"\"+$selected
 
