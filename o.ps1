@@ -18,52 +18,42 @@ if ([string]::IsNullOrEmpty($selected)) {
 
 $TargetLocation=$search_dir+"\"+$selected
 
-$PotentialGodotFile=$TargetLocation+"\project.godot"
+Set-Location -Path $TargetLocation
+
+$PotentialGodotFile="\project.godot"
 
 $TargetIsGodot=Test-Path $potentialGodotFile -PathType leaf
 if ($TargetIsGodot) {
 	Write-Output "Detected godot.project file"
 }
 
-$PotentialPythonFile=$TargetLocation+"\requirements.txt"
-$TargetIsPython=Test-Path $PotentialPythonFile -PathType leaf
-if ($TargetIsPython) {
-	$SourceVenv=$false
-	Write-Output "Detected requirements.txt file"
-	$SourceVenvResponse=Read-Prompt -Prompt "Source venv (default yes)" -DefaultValue "yes"
-	if ($SourceVenvResponse -And $SourceVenvResponse.Substring(0,1) -eq "y") {
-		$SourceVenv=$true
+$TargetIsPython=Test-Path "requirements.txt" -PathType leaf
+$TargetHasVenv=Test-Path "venv" -PathType container
+$MakeVenv=$false
+$SourceVenv=$true
+if ($TargetIsPython -And -Not $TargetHasVenv) {
+	Write-Output "Detected requirements.txt file but not venv"
+	$MakeVenvResponse=Read-Prompt -Prompt "Make venv (default yes)" -DefaultValue "yes"
+	if ($MakeVenvResponse -And $MakeVenvResponse.Substring(0,1) -eq "y") {
+		$MakeVenv=$true
+	} else {
+		$SourceVenv=$false
 	}
 }
 
-$OpenEditor=$false
-$OpenEditorResponse=Read-Prompt -Prompt "Open editor (default no)" -DefaultValue "no"
-if ($OpenEditorResponse -And $OpenEditorResponse.Substring(0,1) -eq "y") {
-	$OpenEditor=$true
-}
 
-$OpenGodot=$false
-if ($TargetIsGodot) {
-	$OpenGodotResponse=Read-Prompt -Prompt "Open godot (default no)" -DefaultValue "no"
-	if ($OpenGodotResponse -And $OpenGodotResponse.Substring(0,1) -eq "y") {
-		$OpenGodot=$true
-	}
-}
-
-Set-Location -Path $targetLocation
 Set-TabTitle -Title $selected
 
-if ($TargetIsGodot) {
-	if ($OpenEditor) {
-		nvim --listen \\.\pipe\nvim.godot.pipe .
-	}
-	if ($OpenGodot) {
-		wt -w 0 new-tab -d $targetLocation godot --editor .
-	}
-}
 
-if ($OpenEditor) {
-	nvim .
+if ($TargetIsPython -And $MakeVenv) {
+	Write-Output "Making venv"
+	mkdir venv
+	cd venv
+	python -m venv .
+	cd ..
+	Write-Output "Installing requiremnts"
+	.\venv\Scripts\activate
+	pip install -r requirements.txt
 }
 
 if ($TargetIsPython -And $SourceVenv) {
