@@ -5,4 +5,13 @@ if ([string]::IsNullOrEmpty($selected)) {
 	Exit
 }
 
-open $selected
+$textExtensions = @(".txt", ".md", ".lua", ".cpp", ".c", ".h", ".cs", ".java", ".py", ".html", ".css", ".js", ".json", ".xml")
+
+$selectedExtension=[System.IO.Path]::GetExtension($selected)
+
+if ($textExtensions -contains $selectedExtension.ToLower()) {
+	nvim $selected
+	# Start-Process nvim -ArgumentList $selected -Wait
+} else {
+	open $selected
+}
