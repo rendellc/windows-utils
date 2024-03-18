@@ -13,5 +13,5 @@ if ($textExtensions -contains $selectedExtension.ToLower()) {
 	nvim $selected
 	# Start-Process nvim -ArgumentList $selected -Wait
 } else {
-	open $selected
+	start $selected
 }
